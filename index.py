@@ -10,28 +10,29 @@ import numpy as np #linear algebra
 import pandas as pd #data processing,CSV file I/O (e.g. pd.read_csv)
 
 import matplotlib.pyplot as plt 
+from datetime import datetime
 
 from keras.models import Sequential,load_model
 from keras.layers import Dense ,Conv2D ,MaxPooling2D ,BatchNormalization , Dropout  , Lambda , Flatten
 from keras.optimizers import Adam , RMSprop
 from sklearn.model_selection import train_test_split
 from keras import backend as K
-from keras.callbacks import ModelCheckpoint
+from keras.callbacks import ModelCheckpoint ,TensorBoard
 from keras.preprocessing.image import ImageDataGenerator
 
 #Input data files are available in the "../input/" directory
 #For example , running this (by clicking run or pressing shift+Enter) will list the files in theinput directory
 
-from subprocess import check_output
-print(check_output(["ls","../input"]).decode("utf8"))
+#from subprocess import check_output
+#print('------------------',check_output(["ls","input"]).decode("utf8"))
 
 #Any result you write to the current directory are saved as output
 
 #create the training & test sets,skipping the header row with[1:]
-train = pd.read_csv("../input/train.csv")
+train = pd.read_csv("input/train.csv")
 print("train",train.shape)
 print("train_5",train.head())
-test = pd.read_csv("../input/test.csv")
+test = pd.read_csv("input/test.csv")
 print("test",test.shape)
 print("test_5",test.head())
 
@@ -122,12 +123,11 @@ else:
 	model = get_cnn_model()
 	filepath = 'logs/weights_cnn.best.h5'
 
-checkpoint = ModelCheckpoint(filepath,monitor='val_loss', save_weights_only=False, save_best_only=True, period=3,mode='auto')
+checkpoint = ModelCheckpoint(filepath,monitor='val_loss', save_weights_only=False, save_best_only=True, period=1,mode='auto')
+logdir="logs/scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
+tensorboard = TensorBoard(log_dir=logdir)
 
-history = model.fit_generator(generator=batches,steps_per_epoch=batches.n,epochs=1,validation_data=val_batches,validation_steps=val_batches.n)
-
-history_dict = history.history
-print(history_dict.keys())
+history = model.fit_generator(generator=batches,steps_per_epoch=batches.n,epochs=20,validation_data=val_batches,validation_steps=val_batches.n,callbacks=[checkpoint,tensorboard])
 
 
 #model_h5 = load_model(filepath)
@@ -135,3 +135,4 @@ predictions_h5 = model.predict_classes(x_test,verbose=0)
 
 submissions = pd.DataFrame({'ImageId':list(range(1,len(predictions_h5)+1)),'Label':predictions_h5})
 submissions.to_csv("DR.csv",index=False,header=True)
+
