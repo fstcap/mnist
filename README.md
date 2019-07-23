@@ -1,0 +1,2 @@
+# mnist
+kaggle mnist demo
