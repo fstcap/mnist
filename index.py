@@ -1,8 +1,10 @@
 import argparse
 parser = argparse.ArgumentParser(description="manual to this script")
-parser.add_argument('--models',type=str,default='cnn')
+parser.add_argument('--models',type=str,default='cnn') #cnn or fc
+parser.add_argument('--methods',type=str,default='train') #train or predict
 args = parser.parse_args()
 models = args.models
+methods = args.methods
 
 print('models',models)
 
@@ -127,12 +129,18 @@ checkpoint = ModelCheckpoint(filepath,monitor='val_loss', save_weights_only=Fals
 logdir="logs/scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
 tensorboard = TensorBoard(log_dir=logdir)
 
-history = model.fit_generator(generator=batches,steps_per_epoch=batches.n,epochs=20,validation_data=val_batches,validation_steps=val_batches.n,callbacks=[checkpoint,tensorboard])
-
-
-#model_h5 = load_model(filepath)
-predictions_h5 = model.predict_classes(x_test,verbose=0)
-
-submissions = pd.DataFrame({'ImageId':list(range(1,len(predictions_h5)+1)),'Label':predictions_h5})
-submissions.to_csv("DR.csv",index=False,header=True)
+if methods == 'train':
+	history = model.fit_generator(generator=batches,steps_per_epoch=batches.n,epochs=20,validation_data=val_batches,validation_steps=val_batches.n,callbacks=[checkpoint,tensorboard])
+elif methods == 'predict':	
+	model_fc_h5 = load_model('logs/weights_fc.best.h5')
+	predictions_fc_h5 = model_fc_h5.predict_classes(x_test,verbose=0)
+	model_cnn_h5 = load_model('logs/weights_cnn.best.h5')
+	predictions_cnn_h5 = model_fc_h5.predict_classes(x_test,verbose=0)
+	count = 0
+	for index in range(len(predictions_fc_h5)):
+		if predictions_fc_h5[index] != predictions_cnn_h5[index]:
+			count +=1
+	print('test_accuracy:',count,len(predictions_fc_h5))
+	submissions = pd.DataFrame({'ImageId':list(range(1,len(predictions_fc_h5)+1)),'Label_fc':predictions_fc_h5,'Label_cnn':predictions_cnn_h5})
+	submissions.to_csv("DR.csv",index=False,header=True)
 
