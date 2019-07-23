@@ -129,6 +129,7 @@ checkpoint = ModelCheckpoint(filepath,monitor='val_loss', save_weights_only=Fals
 logdir="logs/scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
 tensorboard = TensorBoard(log_dir=logdir)
 
+#添加模块
 if methods == 'train':
 	history = model.fit_generator(generator=batches,steps_per_epoch=batches.n,epochs=20,validation_data=val_batches,validation_steps=val_batches.n,callbacks=[checkpoint,tensorboard])
 elif methods == 'predict':	
