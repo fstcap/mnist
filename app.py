@@ -126,12 +126,12 @@ else:
 	filepath = 'logs/weights_cnn.best.h5'
 
 checkpoint = ModelCheckpoint(filepath,monitor='val_loss', save_weights_only=False, save_best_only=True, period=1,mode='auto')
-logdir="logs/scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
+logdir=f'logs/scalars/{models}_{datetime.now().strftime("%Y%m%d-%H%M%S")}'
 tensorboard = TensorBoard(log_dir=logdir)
 
 #添加模块
 if methods == 'train':
-	history = model.fit_generator(generator=batches,steps_per_epoch=batches.n,epochs=2,validation_data=val_batches,validation_steps=val_batches.n,callbacks=[checkpoint,tensorboard])
+	history = model.fit_generator(generator=batches,steps_per_epoch=batches.n,epochs=50,validation_data=val_batches,validation_steps=val_batches.n,callbacks=[checkpoint,tensorboard])
 elif methods == 'predict':	
 	model_fc_h5 = load_model('logs/weights_fc.best.h5')
 	predictions_fc_h5 = model_fc_h5.predict_classes(x_test,verbose=0)

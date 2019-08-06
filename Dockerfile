@@ -2,10 +2,19 @@
 FROM python:3.6
 
 # Set the working directory to /app
-WORKDIR /home/bruce/workspace/mnist
+WORKDIR /app
 
 # Copy the current directory contents into the container at /app
-COPY . /home/bruce/workspace/mnist
+COPY input/ /app/input
+
+COPY app.py /app
+
+COPY logs/ /app/logs
+
+COPY requirements.txt /app
+
+# Upgrade pip
+RUN pip install --upgrade pip
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
@@ -17,4 +26,4 @@ EXPOSE 80
 ENV NAME World
 
 # Run app.py when the container launches
-CMD ["python", "app.py","--models","fc","--methods","train"]
+CMD ["python","app.py","--models","fc","--methods","train"]
