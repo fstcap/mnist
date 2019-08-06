@@ -1,12 +1,18 @@
 import argparse
+import os
 parser = argparse.ArgumentParser(description="manual to this script")
 parser.add_argument('--models',type=str,default='cnn') #cnn or fc
 parser.add_argument('--methods',type=str,default='train') #train or predict
 args = parser.parse_args()
 models = args.models
 methods = args.methods
-
 print('models',models)
+
+dir_addr = '/app/logs/scalars'
+folder = os.path.exists(dir_addr)
+if folder:
+	print(f'{dir_addr} There is this folder!')
+os.makedirs(dir_addr)
 
 import numpy as np #linear algebra
 import pandas as pd #data processing,CSV file I/O (e.g. pd.read_csv)

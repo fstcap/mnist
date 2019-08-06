@@ -9,8 +9,6 @@ COPY input/ /app/input
 
 COPY app.py /app
 
-COPY logs/ /app/logs
-
 COPY requirements.txt /app
 
 # Upgrade pip
