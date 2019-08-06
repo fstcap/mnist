@@ -10,9 +10,8 @@ print('models',models)
 
 dir_addr = '/app/logs/scalars'
 folder = os.path.exists(dir_addr)
-if folder:
-	print(f'{dir_addr} There is this folder!')
-os.makedirs(dir_addr)
+if not folder:
+	os.makedirs(dir_addr)
 
 import numpy as np #linear algebra
 import pandas as pd #data processing,CSV file I/O (e.g. pd.read_csv)
