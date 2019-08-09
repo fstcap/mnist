@@ -21,7 +21,9 @@ RUN pip install --trusted-host pypi.python.org -r requirements.txt
 EXPOSE 80
 
 # Define environment variable
-ENV NAME World
+ENV MODELS fc
+
+ENV METHODS train
 
 # Run app.py when the container launches
-CMD ["python","app.py","--models","fc","--methods","train"]
+CMD python app.py --models $MODELS --methods $METHODS
